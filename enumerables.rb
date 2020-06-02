@@ -24,8 +24,18 @@ def my_each_with_index
   array
 end
 
-a ={ height: '6 ft', weight: '160 lbs' }
-a.my_each_with_index do |key, value|
-  puts "this is the #{key} with #{value}"
-end 
+def my_select
+    return to_enum(:my_select) unless block_given?
+    new_array = []
+  my_each do |x|
+new_array.push(x) if yield(x) == true
+  end
+  new_array
 end
+end
+  
+
+puts [1,2,3,4,5,6].my_select(&:even?)
+
+
+

@@ -46,11 +46,28 @@ module Enumerable
   end
   true
 end
+def my_any?
+  return to_enum(:my_any?) unless block_given?
+  my_each do |x|
+  if yield(x) == true
+    return true
+  end
+end
+false
+end
+def my_none?
+  return to_enum(:my_none?) unless block_given?
+  my_each do |x|
+  if yield(x) == true
+    return false
+  end
+end
+false
 end
 
 
 
-puts %w[ant be cat].my_all? { |word| word.length >= 3 }
-
-
+puts %w{ant bear cat}.none? { |word| word.length == 5 } #=> true
+puts %w{ant bear cat}.none? { |word| word.length >= 4 } #=> false
+                     
 

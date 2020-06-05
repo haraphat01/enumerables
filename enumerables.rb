@@ -62,12 +62,13 @@ def my_none?
     return false
   end
 end
-false
+true
+end
 end
 
 
 
-puts %w{ant bear cat}.none? { |word| word.length == 5 } #=> true
-puts %w{ant bear cat}.none? { |word| word.length >= 4 } #=> false
+puts %w{ant bear cat}.none? { |word| word.length == 3 } #=> true
+puts %w{ant bear cat}.none? { |word| word.length < 2 } #=> false
                      
 

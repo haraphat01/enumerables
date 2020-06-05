@@ -7,12 +7,12 @@ module Enumerable
       while i < array.length
         yield(array[i])
         i+=1
-    end
+      end
     array
-  end
+    end
  
 
-def my_each_with_index
+    def my_each_with_index
     return to_enum(:my_each_with_index) unless block_given?
     
     i = 0
@@ -22,20 +22,35 @@ def my_each_with_index
       i+=1
   end
   array
-end
+   end
 
-def my_select
+    def my_select
     return to_enum(:my_select) unless block_given?
     new_array = []
-  my_each do |x|
-new_array.push(x) if yield(x) == true
+     my_each do |x|
+     new_array.push(x) if yield(x) == true
   end
   new_array
-end
-end
+    end
+
+    def my_all?
+  return to_enum(:my_all?) unless block_given?
+   my_each do |x|
+ if yield(x) != true
+  return false 
+ 
   
+  
+    end
+
+  end
+  true
+end
+end
 
 
+
+puts %w[ant be cat].my_all? { |word| word.length >= 3 }
 
 
 

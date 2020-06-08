@@ -64,11 +64,27 @@ def my_none?
 end
 true
 end
+
+def my_count(args = nil)
+  counter = 0
+  if args
+  my_each { |i| counter += 1 if i == args }
+  elsif !block_given?
+  counter = size
+  elsif !args
+  my_each { |i| counter += 1 if yield i }
+  end
+  counter
+  end
+ 
+  
 end
 
 
 
-puts %w{ant bear cat}.none? { |word| word.length == 3 } #=> true
-puts %w{ant bear cat}.none? { |word| word.length < 2 } #=> false
-                     
+
+ary = [1, 2, 4, 2]
+puts ary.my_map                 #=> 4
+#puts ary.count(2)               #=> 2
+#puts ary.count { |x| x%2 == 0 } #=> 3
 

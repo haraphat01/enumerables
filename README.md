@@ -1,1 +1,3 @@
 # enumerables
+
+"Enumerable" is actually a "module", which means it is just a bunch of methods packaged together that can (and do) get "mixed in", or included, with other classes (like Array and Hash. That means that Ruby programmers don't have to write all those methods many different times - they just write them once, package them up as Enumerable, and tell Array and Hash to include them. As long as the class that wants to include Enumerable has its own #each method that Enumerable can use, it can get access to all the magic and joy of using the Enumerable methods by simply mixing it in.

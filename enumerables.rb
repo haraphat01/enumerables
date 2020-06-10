@@ -83,7 +83,7 @@ module Enumerable
       result.push(yield(n))
     end
     result
-end
+  end
 
   def my_inject(*args)
     arr = is_a?(Range) ? to_a : self
@@ -101,5 +101,3 @@ end
 def multiply_els(array)
   array.my_inject { |product, n| product * n }
 end
-
-puts (1..4).map { |i| i*i }  

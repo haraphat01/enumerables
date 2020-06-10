@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # My each method for Ruby, you can use it by simply calling it .my_each
 module Enumerable
   def my_each
@@ -6,7 +7,7 @@ module Enumerable
 
     i = 0
     array = to_a
-    while i < array.length
+    until i >= array.length
       yield(array[i])
       i += 1
     end
@@ -18,7 +19,7 @@ module Enumerable
 
     i = 0
     array = to_a
-    while i < array.length
+    until i >= array.length
       yield(array[i], i)
       i += 1
     end
@@ -74,17 +75,15 @@ module Enumerable
     counter
   end
 
-  def my_map(&proc_0)
+  def my_map
     return to_enum(:my_map) unless block_given?
 
-    map = []
-    if !proc_0.nil?
-      my_each { |value| map.push(proc_0.call(value)) }
-    elsif block_given?
-      my_each { |value| map.push(yield(value)) }
+    result = []
+    my_each do |n|
+      result.push(yield(n))
     end
-    map
-  end
+    result
+end
 
   def my_inject(*args)
     arr = is_a?(Range) ? to_a : self
@@ -103,4 +102,4 @@ def multiply_els(array)
   array.my_inject { |product, n| product * n }
 end
 
-
+puts (1..4).map { |i| i*i }  

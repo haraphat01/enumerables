@@ -2,32 +2,29 @@
 
 # My each method for Ruby, you can use it by simply calling it .my_each
 module Enumerable
-  def my_each
-    return to_enum :my_each unless block_given?
-    
-    case self
-    when Array
-      length.times do |i|
-        yield(self[i])
+    def my_each
+      return to_enum(:my_each) unless block_given?
+  
+      i = -1
+      arr = to_a
+      while i < arr.length
+        i += 1
+        yield(arr[i])
       end
-    when Hash
-      length.times do |i|
-        yield(keys[i], self[keys[i]])
-      end
-    else
       self
     end
-    self
-  end
-
+    
   def my_each_with_index
-    return to_enum :my_each_with_index unless block_given?
-
-    length.times do |i|
-      yield self[i], i
+    return to_enum(:my_each) unless block_given?
+  
+      i = -1
+      arr = to_a
+      arr.length.times do
+        i += 1
+        yield(arr[i], i)
+      end
+      self
     end
-    self
-  end
   
 
   
@@ -107,5 +104,4 @@ def multiply_els(array)
   array.my_inject { |product, n| product * n }
 end
 
-
-a=[11,22,31,224,44].my_each_with_index { |val,index| puts "index: #{index} for #{val}" if val < 30}
+(1..3).my_each_with_index { | value, index | puts index }

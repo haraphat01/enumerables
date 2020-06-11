@@ -1,107 +1,128 @@
 # frozen_string_literal: true
-
 # My each method for Ruby, you can use it by simply calling it .my_each
-module Enumerable
-    def my_each
-      return to_enum(:my_each) unless block_given?
-  
-      i = -1
-      arr = to_a
-      while i < arr.length
-        i += 1
-        yield(arr[i])
-      end
-      self
+module Enumerable # rubocop:disable Metrics/ModuleLength
+  def my_each
+    new_array = [] unless block_given?
+    i = 0
+    a = Array self
+    while i < a.size
+      yield(a[i]) if block_given?
+      new_array << a[i] unless block_given?
+      i += 1
     end
-    
-  def my_each_with_index
-    return to_enum(:my_each) unless block_given?
-  
-      i = -1
-      arr = to_a
-      arr.length.times do
-        i += 1
-        yield(arr[i], i)
-      end
-      self
-    end
-  
+    return Enumerator.new(new_array) unless block_given?
 
-  
+    self
+  end
+
+  def my_each_with_index
+    new_array = [] unless block_given?
+    i = 0
+    a = Array self
+    while i < size
+      yield(a[i], i) if block_given?
+      new_array << a[i] unless block_given?
+      i += 1
+    end
+    return Enumerator.new(new_array) unless block_given?
+
+    self
+  end
+
   def my_select
-    return to_enum(:my_select) unless block_given?
+    return my_each unless block_given?
 
     new_array = []
-    my_each do |x|
-      new_array.push(x) if yield(x) == true
-    end
+    my_each { |n| new_array.push(n) if yield(n) }
     new_array
   end
 
-  def my_all?
-    return to_enum(:my_all?) unless block_given?
-
-    my_each do |x|
-      return false if yield(x) != true
+  def my_all?(pattern = nil)
+    if block_given?
+      my_each { |n| return false unless yield(n) }
+    elsif pattern
+      my_each { |n| return false unless value(n, pattern) }
+    else
+      my_each { |n| return false unless n }
     end
     true
   end
 
-  def my_any?
-    return to_enum(:my_any?) unless block_given?
-
-    my_each do |x|
-      return true if yield(x) == true
+  def my_any?(pattern = nil)
+    if block_given?
+      my_each { |n| return true if yield(n) }
+    elsif pattern
+      my_each { |n| return true if any_checker(n, pattern) }
+    else
+      my_each { |n| return true if n }
     end
     false
   end
 
-  def my_none?
-    return to_enum(:my_none?) unless block_given?
-
-    my_each do |x|
-      return false if yield(x) == true
+  def my_none?(pattern = nil)
+    if block_given?
+      my_each { |n| return false if yield(n) }
+    elsif pattern
+      my_each { |n| return false if value(n, pattern) }
+    else
+      my_each { |n| return false if n }
     end
     true
   end
 
-  def my_count(args = nil)
-    counter = 0
-    if args
-      my_each { |i| counter += 1 if i == args }
-    elsif !block_given?
-      counter = size
-    elsif !args
-      my_each { |i| counter += 1 if yield i }
+  def my_count(item = false)
+    count = 0
+
+    if !block_given?
+      return size unless item
+
+      my_each { |n| count += 1 if n == item }
+    elsif block_given? && !item
+      my_each { |n| count += 1 if yield(n) }
+    elsif block_given? && item
+      my_each { |n| count += 1 if n == item }
     end
-    counter
+    count
   end
 
-  def my_map
-    return to_enum(:my_map) unless block_given?
-
-    result = []
-    my_each do |n|
-      result.push(yield(n))
+  def my_map(proc = nil)
+    new_array = []
+    if proc
+      my_each { |n| new_array.push(proc.call(n)) }
+    else
+      my_each { |n| new_array.push(yield(n)) } if block_given?
+      my_each { |n| new_array << n } unless block_given?
+      new_array = Enumerator.new(new_array) unless block_given?
+      new_array
     end
-    result
   end
 
   def my_inject(*args)
-    arr = is_a?(Range) ? to_a : self
-    value = args[0] if args[0].is_a?(Integer)
-    op = args[0].is_a?(Symbol) ? args[0] : args[1]
-    if op
-      arr.my_each { |x| value = value ? value.send(op, x) : x }
-      return value
+    memo = nil
+    if oop?(args[0])
+      initial = args[1]
+      operation = args[0]
+      memo = initial
+    elsif args[0]
+      initial = args[0]
+      operation = args[1]
+      memo = initial
     end
-    arr.my_each { |x| value = value ? yield(value, x) : x }
-    value
+    if block_given? && operation.nil?
+      my_each do |n|
+        memo && memo = yield(memo, n)
+        memo ||= n
+        memo = nil if yield(memo, n).nil?
+      end
+    else
+      memo = nil_asign(operation, memo)
+      my_each { |n| memo = oop_eval(memo, n, operation) }
+    end
+    memo
   end
 end
 
 def multiply_els(array)
   array.my_inject { |product, n| product * n }
 end
-
-(1..3).my_each_with_index { | value, index | puts index }
+puts (5..10).inject { |sum, n| sum + n } 

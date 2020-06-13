@@ -1,6 +1,7 @@
 # frozen_string_literal: true
+
 # My each method for Ruby, you can use it by simply calling it .my_each
-module Enumerable # rubocop:disable Metrics/ModuleLength
+module Enumerable
   def my_each
     new_array = [] unless block_given?
     i = 0
@@ -37,37 +38,53 @@ module Enumerable # rubocop:disable Metrics/ModuleLength
     new_array
   end
 
-  def my_all?(pattern = nil)
+  def my_all?(*args)
+    result = true
     if block_given?
-      my_each { |n| return false unless yield(n) }
-    elsif pattern
-      my_each { |n| return false unless value(n, pattern) }
+      my_each do |i|
+        result = false unless yield(i)
+      end
+    elsif !args[0].nil?
+      my_each do |i|
+        result = false unless args[0] === i
+      end
+    elsif empty? && args[0].nil?
+      result = true
     else
-      my_each { |n| return false unless n }
+      my_each do |i|
+        result = false unless i
+      end
     end
-    true
+    result
   end
 
-  def my_any?(pattern = nil)
+  def my_any?(*args)
+    result = false
     if block_given?
-      my_each { |n| return true if yield(n) }
-    elsif pattern
-      my_each { |n| return true if any_checker(n, pattern) }
+      my_each do |i|
+        result = true if yield(i)
+      end
+    elsif !args[0].nil?
+      my_each do |i|
+        result = true if args[0] === i
+      end
+    elsif empty? && args[0].nil?
+      result = false
     else
-      my_each { |n| return true if n }
+      my_each do |i|
+        result = true if i
+      end
     end
-    false
+    result
   end
 
-  def my_none?(pattern = nil)
-    if block_given?
-      my_each { |n| return false if yield(n) }
-    elsif pattern
-      my_each { |n| return false if value(n, pattern) }
-    else
-      my_each { |n| return false if n }
-    end
-    true
+  def my_none?(args = nil)
+    result = if block_given?
+               !my_any? { |i| yield i }
+             else
+               !my_any?(args)
+             end
+    result
   end
 
   def my_count(item = false)
@@ -85,44 +102,50 @@ module Enumerable # rubocop:disable Metrics/ModuleLength
     count
   end
 
-  def my_map(proc = nil)
-    new_array = []
-    if proc
-      my_each { |n| new_array.push(proc.call(n)) }
-    else
-      my_each { |n| new_array.push(yield(n)) } if block_given?
-      my_each { |n| new_array << n } unless block_given?
-      new_array = Enumerator.new(new_array) unless block_given?
-      new_array
-    end
-  end
-
-  def my_inject(*args)
-    memo = nil
-    if oop?(args[0])
-      initial = args[1]
-      operation = args[0]
-      memo = initial
-    elsif args[0]
-      initial = args[0]
-      operation = args[1]
-      memo = initial
-    end
-    if block_given? && operation.nil?
-      my_each do |n|
-        memo && memo = yield(memo, n)
-        memo ||= n
-        memo = nil if yield(memo, n).nil?
+  def my_map(args_proc = nil)
+    return to_enum :my_map unless block_given? || args_proc.class == Proc
+    new_arr = []
+    new_object = to_a
+    if !args_proc.nil?
+      new_object.my_each do |i|
+        new_arr.push(proc.call(i))
       end
     else
-      memo = nil_asign(operation, memo)
-      my_each { |n| memo = oop_eval(memo, n, operation) }
+      new_object.my_each do |i|
+        new_arr.push(yield(i))
+      end
     end
-    memo
+    new_arr
+  end
+
+  def my_inject(args1 = nil, args2 = nil)
+    new_object = to_a
+    sum = new_object[0]
+    t = 1
+    if !args1.nil? && args2.class == Symbol
+      sum = args1
+      new_object.my_each { |i| sum = sum.send(args2, i) }
+    elsif args1.nil? && args2.nil?
+      loop do
+        sum = yield(sum, new_object[t]) if block_given?
+        t += 1
+        break if t == new_object.length
+      end
+    elsif args1.class == Symbol
+      loop do
+        sum = sum.send(args1, new_object[t])
+        t += 1
+        break if t == new_object.length
+      end
+
+    elsif !args1.nil? && args2.nil?
+      sum = args1
+      new_object.my_each { |i| sum = yield(sum, i) } if block_given?
+    end
+    sum
   end
 end
 
 def multiply_els(array)
   array.my_inject { |product, n| product * n }
 end
-puts (5..10).inject { |sum, n| sum + n } 

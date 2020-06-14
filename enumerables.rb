@@ -118,31 +118,21 @@ module Enumerable
     new_arr
   end
 
-  def my_inject(args1 = nil, args2 = nil)
-    new_object = to_a
-    sum = new_object[0]
-    t = 1
-    if !args1.nil? && args2.class == Symbol
-      sum = args1
-      new_object.my_each { |i| sum = sum.send(args2, i) }
-    elsif args1.nil? && args2.nil?
-      loop do
-        sum = yield(sum, new_object[t]) if block_given?
-        t += 1
-        break if t == new_object.length
-      end
-    elsif args1.class == Symbol
-      loop do
-        sum = sum.send(args1, new_object[t])
-        t += 1
-        break if t == new_object.length
-      end
-
-    elsif !args1.nil? && args2.nil?
-      sum = args1
-      new_object.my_each { |i| sum = yield(sum, i) } if block_given?
+  def my_inject(*par) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+    new_array = is_a?(Array) ? self : to_a
+    memo = par[0] if par[0].is_a? Integer
+    if par[0].is_a?(Symbol) || par[0].is_a?(String)
+      sym = par[0]
+    elsif par[0].is_a?(Integer)
+      sym = par[1] if par[1].is_a?(Symbol) || par[1].is_a?(String)
     end
-    sum
+    if sym
+      new_array.my_each { |element| memo = memo ? memo.send(sym, element) : element }
+      memo
+    else
+      new_array.my_each { |element| memo = memo ? yield(memo, element) : element }
+    end
+    memo
   end
 end
 

@@ -1,4 +1,4 @@
-# frozen_string_literal: true
+# rubocop:disable Metrics/ModuleLength, Style/CaseEquality, Metrics/MethodLength, Metrics/CyclomaticComplexity,Metrics/AbcSize, Metrics/PerceivedComplexity
 
 # My each method for Ruby, you can use it by simply calling it .my_each
 module Enumerable
@@ -118,7 +118,7 @@ module Enumerable
     new_arr
   end
 
-  def my_inject(*par) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+  def my_inject(*par)
     new_array = is_a?(Array) ? self : to_a
     memo = par[0] if par[0].is_a? Integer
     if par[0].is_a?(Symbol) || par[0].is_a?(String)
@@ -139,3 +139,4 @@ end
 def multiply_els(array)
   array.my_inject { |product, n| product * n }
 end
+# rubocop:enable Metrics/ModuleLength, Style/CaseEquality, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity

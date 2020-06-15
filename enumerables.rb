@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # rubocop:disable Metrics/ModuleLength, Style/CaseEquality, Metrics/MethodLength, Metrics/CyclomaticComplexity,Metrics/AbcSize, Metrics/PerceivedComplexity
 
 # My each method for Ruby, you can use it by simply calling it .my_each
@@ -104,6 +106,7 @@ module Enumerable
 
   def my_map(args_proc = nil)
     return to_enum :my_map unless block_given? || args_proc.class == Proc
+
     new_arr = []
     new_object = to_a
     if !args_proc.nil?
@@ -139,4 +142,5 @@ end
 def multiply_els(array)
   array.my_inject { |product, n| product * n }
 end
-# rubocop:enable Metrics/ModuleLength, Style/CaseEquality, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+
+# rubocop:enable Metrics/ModuleLength, Style/CaseEquality, Metrics/MethodLength, Metrics/CyclomaticComplexity,Metrics/AbcSize, Metrics/PerceivedComplexity

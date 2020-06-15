@@ -143,4 +143,4 @@ def multiply_els(array)
   array.my_inject { |product, n| product * n }
 end
 
-# rubocop:enable Metrics/ModuleLength, Style/CaseEquality, Metrics/MethodLength, Metrics/CyclomaticComplexity,Metrics/AbcSize, Metrics/PerceivedComplexity
+# rubocop:enable Metrics/ModuleLength, Style/CaseEquality,Layout/LineLength, Metrics/MethodLength, Metrics/CyclomaticComplexity,Metrics/AbcSize, Metrics/PerceivedComplexity

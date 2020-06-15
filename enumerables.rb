@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# rubocop:disable Metrics/ModuleLength, Style/CaseEquality, Metrics/MethodLength, Metrics/CyclomaticComplexity,Metrics/AbcSize, Metrics/PerceivedComplexity
+# rubocop:disable Metrics/ModuleLength, Style/CaseEquality,Layout/LineLength, Metrics/MethodLength,Metrics/CyclomaticComplexity,Metrics/AbcSize, Metrics/PerceivedComplexity
 
 # My each method for Ruby, you can use it by simply calling it .my_each
 module Enumerable
